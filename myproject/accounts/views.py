@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from .models import UserLoginForm, RegisterForm
 
-def login_view(request):
+def oauth(request):
     next = request.GET.get('next')
     form = UserLoginForm(request.POST or None)
     if form.is_valid():
