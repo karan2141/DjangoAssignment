@@ -1,6 +1,6 @@
 from django.db import models
 from django import forms
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, password_validation
 
 User = get_user_model()
 
@@ -34,12 +34,14 @@ class RegisterForm(forms.ModelForm):
             'password2',
         ]
 
+    def clean(self):
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
+            raise forms.ValidationError('Passwords are not equal')
+        password_validation.validate_password(self.cleaned_data.get('password'), None)
+        return self.cleaned_data
+
     def cleanEmail(self):
         email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
-        password2 = self.cleaned_data.get('password2')
-        if password != password2:
-            raise forms.ValidationError("password donot match")
         email_in = User.objects.filter(email=email)
         if email_in.exists():
             raise forms.ValidationError("email already registered")
